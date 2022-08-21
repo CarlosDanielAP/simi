@@ -26,15 +26,20 @@ public class MiraScript : MonoBehaviour
         //si estamos precionando mover
         if (GameManager.sharedInstance.currentGameState==GameState.calcular)
         {
+            lanzador = GameManager.sharedInstance.Origen.transform;
+            target = GameManager.sharedInstance.Targets[0].transform;
+            zDist += lanzador.transform.position.z;
             //normalizamos la posicion final y la multiplicamos por zDist para que se pase un poco.
-                    limitPos = target.position-lanzador.position;
-                    transform.position = Vector3.MoveTowards(transform.position,limitPos.normalized*zDist, speed * Time.deltaTime);
+            limitPos = target.position-lanzador.position;
+            transform.position = Vector3.MoveTowards(transform.position,limitPos.normalized*zDist, speed * Time.deltaTime);
 
         }
         
         
         
     }
+
+    
 
    
 }

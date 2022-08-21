@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class SimiScript : MonoBehaviour
 {
+    public Transform theZone;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,9 +25,22 @@ public class SimiScript : MonoBehaviour
             GameManager.sharedInstance.NotCatched();
         }
 
+        if (collision.gameObject.CompareTag("Target"))
+        {  
+            collision.gameObject.tag = "Player";
+            
+            GameManager.sharedInstance.Catched();
+            transform.position = theZone.position;
+            GameManager.sharedInstance.WaitingPress();
+        }
+
         if (collision.gameObject.CompareTag("Player"))
         {
-            GameManager.sharedInstance.Catched();
+            GameManager.sharedInstance.CatchedbyPlayer();
+            transform.position = theZone.position;
+            GameManager.sharedInstance.WaitingPress();
         }
     }
+
+   
 }

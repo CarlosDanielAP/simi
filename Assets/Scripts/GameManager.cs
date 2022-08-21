@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.Controls;
 
 public enum GameState
 {
-    esperar,calcular,lanzar,volando,atrapar,noatrapar
+    esperar,calcular,lanzar,volando,atrapar,noatrapar, atrapaPlayer
 }
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     private Rigidbody SimiRB;
     private Collider SimiCollider;
     public GameObject Origen;
+    public List<GameObject> Targets = new List<GameObject>();
+
     public static GameManager sharedInstance;
     private PlayerControlls _playerControlls;
     public  float alturaMaxima = 10f;
@@ -91,6 +93,10 @@ public class GameManager : MonoBehaviour
     {
         setGameState(GameState.atrapar);
     }
+    public void CatchedbyPlayer()
+    {
+        setGameState(GameState.atrapaPlayer);
+    }
 
     public void NotCatched()
     {
@@ -112,6 +118,7 @@ public class GameManager : MonoBehaviour
         {
             Physics.gravity = Vector3.up * gravity;
             SimiRB.useGravity = true;
+            SimiRB.isKinematic = false;
             SimiRB.velocity = CalcularVelocidad();
            
         }
@@ -119,12 +126,39 @@ public class GameManager : MonoBehaviour
         else if (newGameState == GameState.volando)
         {
             SimiCollider.enabled = true;
+            
         }
         else if (newGameState==GameState.atrapar)
         {
-          
+           
+            //el primer lanzador (Origen )deja de ser el Player(TAG)
+            Origen.tag = "Untagged";
+            //el primer target de la lista pasa a ser el Origen
+            Origen = Targets[0];
+            //lo sacamos de la lista porque ya no es un target
+            Targets.RemoveAt(0);
+            
+            //quitamos la gravedad al simi para que no caiga al piso
+            SimiRB.isKinematic = true;
+            SimiRB.useGravity = false;
+            
+            
+                //resetear la posicion de la mira hacia el nuevo jugador
+            ResetPosition();
         }
-        
+        else if (newGameState == GameState.atrapaPlayer)
+        {
+            //si solo subio y bajo
+            
+            //quitamos la gravedad al simi para que no caiga al piso
+            SimiRB.isKinematic = true;
+            SimiRB.useGravity = false;
+            
+            
+            //resetear la posicion de la mira hacia el nuevo jugador
+            ResetPosition();
+        }
+
         else if (newGameState == GameState.noatrapar)
         {
             
@@ -143,6 +177,14 @@ public class GameManager : MonoBehaviour
         velocidadZ = desplazamiento.z / ((-velodidadY / gravity) + Mathf.Sqrt(2 * (desplazamiento.y - alturaMaxima) / gravity));
 
         return new Vector3(velocidadX, velodidadY, velocidadZ);
+        
+    }
+    //resetear la posicion de la mira
+    void ResetPosition()
+    {
+        GameObject PlayerPos;
+        PlayerPos=GameObject.FindWithTag("Player");
+        Mira.transform.position = PlayerPos.transform.position;
         
     }
 }
