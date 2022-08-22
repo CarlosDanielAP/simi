@@ -9,8 +9,8 @@ public class MiraScript : MonoBehaviour
     public Transform target;
     public Transform lanzador;
     public float speed =1.5f;
-    public float zDist = 5f;
-
+    public float zDist = 1f;
+    private float finalZDist;
     private Vector3 limitPos;
     
 
@@ -28,10 +28,22 @@ public class MiraScript : MonoBehaviour
         {
             lanzador = GameManager.sharedInstance.Origen.transform;
             target = GameManager.sharedInstance.Targets[0].transform;
-            zDist += lanzador.transform.position.z;
             //normalizamos la posicion final y la multiplicamos por zDist para que se pase un poco.
-            limitPos = target.position-lanzador.position;
-            transform.position = Vector3.MoveTowards(transform.position,limitPos.normalized*zDist, speed * Time.deltaTime);
+
+            if (Vector3.Distance(lanzador.position,transform.position)<zDist)
+            {
+                limitPos = (target.position-lanzador.position).normalized*speed;
+                transform.position += limitPos * Time.deltaTime;
+            }
+            
+            
+          
+            
+            
+           // transform.position = Vector3.MoveTowards(transform.position,target.transform.position,2);
+           
+           
+          
 
         }
         
