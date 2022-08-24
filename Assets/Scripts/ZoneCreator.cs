@@ -19,7 +19,7 @@ public class ZoneCreator : MonoBehaviour
     private int indexFila;
     //public GameObject[] catcherPersons;
     public List<int> chosens = new List<int>();
-    public Transform mira;
+    public Transform PlayerZone;
 
     
   
@@ -72,34 +72,57 @@ public class ZoneCreator : MonoBehaviour
         }
 
         chosens.Sort();
-        //calculamos el primer atrapador
-        calcularTarget();
+       
       
     }
 
-    public void calcularTarget()
+    public void calcularTarget(Transform origen)
     {
         if (chosens.Count <= 0)
         {
             Debug.Log("vacio");
+            //si ya no hay nadie en el arreglo elegimos otra zona para comenzar 
             GameManager.sharedInstance.NextZone();
         }
 
+        //tomamos la distancia entre el primer atrapador y el que se elegira despues
         else
         {
-            int random = Random.Range(0, width);
-                    while (Vector3.Distance(Personas[chosens[0],random].transform.position,mira.position)>10)
-                    {
-                        random = Random.Range(0, width);
-                    }
-                    GameManager.sharedInstance.Targets[0] = Personas[chosens[0], random];
-                    Debug.Log(chosens[0]+"  -  " +random);
-                    chosens.RemoveAt(0);
+          
+           int random = Random.Range(0, width);
+           randomizador(random,origen); 
+           Debug.Log(chosens[0]+"  -  persona " +random); 
+           chosens.RemoveAt(0);
+
+            
+                    
         }
         
       
         
        
+    }
+
+    void randomizador(int random,Transform origen)
+    {
+        //medimos la distancia del player a la siguiente zona aleatoria
+        // PlayerZone = GameManager.sharedInstance.Origen.transform;
+        PlayerZone = origen;
+        if (Vector3.Distance(Personas[chosens[0],random].transform.position,PlayerZone.position)>=10)
+        {
+            //TODO: arreglar el stackoverflow*
+            
+            //si no encuentra ninguno va a entrar en stack overflow
+            random = Random.Range(0, width);
+            randomizador(random,PlayerZone);
+        }
+
+        else
+        {
+            GameManager.sharedInstance.Targets[0] = Personas[chosens[0], random];
+            //esta va a ser la nueva player zone
+            //PlayerZone=Personas[chosens[0], random].transform;
+        }
     }
 
   

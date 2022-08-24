@@ -7,11 +7,11 @@ using UnityEngine.InputSystem.Controls;
 
 public enum GameState
 {
-    esperar,calcular,lanzar,volando,atrapar,noatrapar, atrapaPlayer,siguienteZona
+    inicioJuego,esperar,calcular,lanzar,volando,atrapar,noatrapar, atrapaPlayer,siguienteZona
 }
 public class GameManager : MonoBehaviour
 {
-    public GameState currentGameState = GameState.esperar;
+    public GameState currentGameState = GameState.inicioJuego;
     public GameObject Mira;
     public GameObject SimiProyectil;
     private Rigidbody SimiRB;
@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour
     private PlayerControlls _playerControlls;
     public  float alturaMaxima = 10f;
     public float gravity = -9.8f;
-    public ZoneCreator zonas;
+    public ZoneCreator []zonas;
+    private int zoneIndex;
     private void Awake()
     {
         _playerControlls = new PlayerControlls();
@@ -35,7 +36,17 @@ public class GameManager : MonoBehaviour
         SimiRB = SimiProyectil.GetComponent<Rigidbody>();
         SimiCollider = SimiProyectil.GetComponent<Collider>();
     }
-
+    
+    private void Start()
+    {
+        _playerControlls.Touch.TouchInput.started += ctx =>StartTouch(ctx);
+        _playerControlls.Touch.TouchInput.canceled += ctx =>EndTouch(ctx);
+        //Esperamos para dar tiempo al creador de zonas de crear el grid
+        Invoke("StartGame",0.1f); 
+       Invoke("WaitingPress",0.2f); 
+       
+        
+    }
     private void OnEnable()
     {
         _playerControlls.Enable();
@@ -66,13 +77,12 @@ public class GameManager : MonoBehaviour
       }
     }
 
-    private void Start()
-    {
-        _playerControlls.Touch.TouchInput.started += ctx =>StartTouch(ctx);
-        _playerControlls.Touch.TouchInput.canceled += ctx =>EndTouch(ctx);
-        
-    }
+   
 
+    public void StartGame()
+    {
+        setGameState(GameState.inicioJuego);
+    }
     public void WaitingPress()
     {
         setGameState(GameState.esperar);
@@ -113,7 +123,15 @@ public class GameManager : MonoBehaviour
     {
         if (newGameState == GameState.esperar)
         {
-            
+            Debug.Log("esperar");
+        }
+        
+        else if (newGameState== GameState.inicioJuego)
+        {
+            Debug.Log("inicio");
+            zonas[zoneIndex].calcularTarget(Origen.transform);
+          
+
         }
         else if (newGameState==GameState.calcular)
         {
@@ -152,7 +170,7 @@ public class GameManager : MonoBehaviour
                 //resetear la posicion de la mira hacia el nuevo jugador
             ResetPosition();
             //elegimos un nuevo target en la zona
-            zonas.calcularTarget();
+            zonas[zoneIndex].calcularTarget(Origen.transform);
         }
         else if (newGameState == GameState.atrapaPlayer)
         {
@@ -174,7 +192,8 @@ public class GameManager : MonoBehaviour
         
         else if (newGameState == GameState.siguienteZona)
         {
-            
+            zoneIndex++;
+            zonas[zoneIndex].calcularTarget(Origen.transform);
         }
 
         this.currentGameState = newGameState;
@@ -195,9 +214,9 @@ public class GameManager : MonoBehaviour
     //resetear la posicion de la mira
     void ResetPosition()
     {
-        GameObject PlayerPos;
+        /*GameObject PlayerPos;
         PlayerPos=GameObject.FindWithTag("Player");
-        Mira.transform.position = PlayerPos.transform.position;
-        
+        Mira.transform.position = PlayerPos.transform.position;*/
+        Mira.transform.position = Origen.transform.position;
     }
 }
