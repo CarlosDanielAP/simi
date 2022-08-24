@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.Controls;
 
 public enum GameState
 {
-    esperar,calcular,lanzar,volando,atrapar,noatrapar, atrapaPlayer
+    esperar,calcular,lanzar,volando,atrapar,noatrapar, atrapaPlayer,siguienteZona
 }
 public class GameManager : MonoBehaviour
 {
@@ -17,12 +17,13 @@ public class GameManager : MonoBehaviour
     private Rigidbody SimiRB;
     private Collider SimiCollider;
     public GameObject Origen;
-    public List<GameObject> Targets = new List<GameObject>();
-
+   // public List<GameObject> Targets = new List<GameObject>();
+   public GameObject[] Targets;
     public static GameManager sharedInstance;
     private PlayerControlls _playerControlls;
     public  float alturaMaxima = 10f;
     public float gravity = -9.8f;
+    public ZoneCreator zonas;
     private void Awake()
     {
         _playerControlls = new PlayerControlls();
@@ -102,6 +103,11 @@ public class GameManager : MonoBehaviour
     {
         setGameState(GameState.noatrapar);
     }
+
+    public void NextZone()
+    {
+        setGameState(GameState.siguienteZona);
+    }
     //cambiar estados
     private void setGameState(GameState newGameState)
     {
@@ -136,8 +142,8 @@ public class GameManager : MonoBehaviour
             //el primer target de la lista pasa a ser el Origen
             Origen = Targets[0];
             //lo sacamos de la lista porque ya no es un target
-            Targets.RemoveAt(0);
-            
+           // Targets.RemoveAt(0);
+           Targets[0] = null;
             //quitamos la gravedad al simi para que no caiga al piso
             SimiRB.isKinematic = true;
             SimiRB.useGravity = false;
@@ -145,6 +151,8 @@ public class GameManager : MonoBehaviour
             
                 //resetear la posicion de la mira hacia el nuevo jugador
             ResetPosition();
+            //elegimos un nuevo target en la zona
+            zonas.calcularTarget();
         }
         else if (newGameState == GameState.atrapaPlayer)
         {
@@ -160,6 +168,11 @@ public class GameManager : MonoBehaviour
         }
 
         else if (newGameState == GameState.noatrapar)
+        {
+            
+        }
+        
+        else if (newGameState == GameState.siguienteZona)
         {
             
         }
