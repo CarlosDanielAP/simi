@@ -193,6 +193,12 @@ public class GameManager : MonoBehaviour
         else if (newGameState == GameState.siguienteZona)
         {
             zoneIndex++;
+            if (zoneIndex==zonas.Length)
+            {
+                Debug.Log("llegaste al escenario");
+                
+            }
+            else
             zonas[zoneIndex].calcularTarget(Origen.transform);
         }
 

@@ -108,8 +108,10 @@ public class ZoneCreator : MonoBehaviour
         //medimos la distancia del player a la siguiente zona aleatoria
         // PlayerZone = GameManager.sharedInstance.Origen.transform;
         PlayerZone = origen;
-        if (Vector3.Distance(Personas[chosens[0],random].transform.position,PlayerZone.position)>=10)
+        //TODO: traer el numero de la mira el 10.
+        if (Vector3.Distance(Personas[chosens[0],random].transform.position,PlayerZone.position)>=11)
         {
+            Debug.Log(Vector3.Distance(Personas[chosens[0],random].transform.position,PlayerZone.position));
             //TODO: arreglar el stackoverflow*
             
             //si no encuentra ninguno va a entrar en stack overflow
@@ -120,6 +122,7 @@ public class ZoneCreator : MonoBehaviour
         else
         {
             GameManager.sharedInstance.Targets[0] = Personas[chosens[0], random];
+            Personas[chosens[0],random].GetComponent<PersonScript>().TheChosenOne();
             //esta va a ser la nueva player zone
             //PlayerZone=Personas[chosens[0], random].transform;
         }

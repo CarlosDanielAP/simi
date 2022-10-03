@@ -307,7 +307,7 @@ MonoBehaviour:
   target: {fileID: 0}
   lanzador: {fileID: 869143247}
   speed: 5
-  zDist: 10
+  zDist: 11
 --- !u!4 &404016756
 Transform:
   m_ObjectHideFlags: 0
